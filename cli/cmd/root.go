@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/linkerd/linkerd2/controller/api/public"
 	pb "github.com/linkerd/linkerd2/controller/gen/public"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	"github.com/linkerd/linkerd2/pkg/version"
@@ -81,6 +82,7 @@ func init() {
 	RootCmd.AddCommand(newCmdCheck())
 	RootCmd.AddCommand(newCmdCompletion())
 	RootCmd.AddCommand(newCmdDashboard())
+	RootCmd.AddCommand(newCmdEndpoints())
 	RootCmd.AddCommand(newCmdGet())
 	RootCmd.AddCommand(newCmdInject())
 	RootCmd.AddCommand(newCmdInstall())
@@ -99,7 +101,7 @@ func init() {
 // cliPublicAPIClient builds a new public API client and executes default status
 // checks to determine if the client can successfully perform cli commands. If the
 // checks fail, then CLI will print an error and exit.
-func cliPublicAPIClient() pb.ApiClient {
+func cliPublicAPIClient() public.APIClient {
 	return validatedPublicAPIClient(time.Time{}, false)
 }
 
@@ -107,7 +109,7 @@ func cliPublicAPIClient() pb.ApiClient {
 // checks to determine if the client can successfully connect to the API. If the
 // checks fail, then CLI will print an error and exit. If the retryDeadline
 // param is specified, then the CLI will print a message to stderr and retry.
-func validatedPublicAPIClient(retryDeadline time.Time, apiChecks bool) pb.ApiClient {
+func validatedPublicAPIClient(retryDeadline time.Time, apiChecks bool) public.APIClient {
 	checks := []healthcheck.CategoryID{
 		healthcheck.KubernetesAPIChecks,
 		healthcheck.LinkerdControlPlaneExistenceChecks,
